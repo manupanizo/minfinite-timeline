@@ -1,0 +1,301 @@
+/* Infinite Timeline — minimal styles */
+
+:root {
+  --color-dark: #1a1a2e;
+  --color-bg: #f7f7fb;
+  --color-panel: #ffffff;
+  --color-border: #e0e0ec;
+  --color-gray: #ccc;
+  --color-muted: #888;
+  --color-accent: #6c63ff;
+  --color-accent-hover: #5750e3;
+  --color-accent-border: #a89bff;
+  --color-danger: #e05252;
+  --color-success: #2e9e5a;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --radius: 8px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-dark);
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── Layout ──────────────────────────────────────────────────────────── */
+
+.app-header {
+  background: var(--color-panel);
+  border-bottom: 1px solid var(--color-border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.app-header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--color-dark);
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.app-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .app-main { grid-template-columns: 1fr; }
+}
+
+/* ── Panels ──────────────────────────────────────────────────────────── */
+
+.panel {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+.panel h2 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  margin-bottom: 16px;
+}
+
+/* ── Form ────────────────────────────────────────────────────────────── */
+
+.event-form {
+  display: grid;
+  gap: 10px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 7px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg);
+  color: var(--color-dark);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+  border-color: var(--color-accent);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────── */
+
+.btn {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s, opacity 0.15s;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--color-accent-hover); }
+
+.btn-secondary {
+  background: var(--color-bg);
+  color: var(--color-dark);
+  border: 1px solid var(--color-border);
+}
+.btn-secondary:hover { background: var(--color-border); }
+
+.btn-danger {
+  background: transparent;
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+}
+.btn-danger:hover { background: #ffeaea; }
+
+.btn-full { width: 100%; justify-content: center; }
+
+/* Timeline controls (injected by timeline.js) */
+.tl-btn {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-panel);
+  color: var(--color-dark);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.12s;
+}
+.tl-btn:hover { background: var(--color-border); }
+
+.tl-keycap {
+  font-size: 10px;
+  padding: 1px 4px;
+  background: var(--color-border);
+  border-radius: 3px;
+  color: var(--color-muted);
+}
+
+/* ── Event list ──────────────────────────────────────────────────────── */
+
+.event-list-section {
+  margin-top: 20px;
+}
+
+.event-list-section h2 {
+  margin-bottom: 10px;
+}
+
+#event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.event-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--color-bg);
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  font-size: 13px;
+}
+
+.event-info {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-btn {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1;
+  border: none;
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  padding: 0 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.remove-btn:hover { color: var(--color-danger); background: #ffeaea; }
+
+.event-list-empty {
+  font-size: 13px;
+  color: var(--color-muted);
+  text-align: center;
+  padding: 12px 0;
+}
+
+/* ── Timeline panel ──────────────────────────────────────────────────── */
+
+.timeline-panel {
+  min-width: 0;
+}
+
+#timeline-container {
+  background: var(--color-panel);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.timeline-empty {
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+  font-size: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  text-align: center;
+  padding: 20px;
+}
+
+/* timeline-component is set by timeline.js */
+.timeline-component {
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius);
+}
+
+/* ── Status bar ──────────────────────────────────────────────────────── */
+
+.status-bar {
+  padding: 4px 24px;
+  min-height: 28px;
+}
+
+.status-msg {
+  font-size: 13px;
+  padding: 4px 0;
+}
+
+.status-ok { color: var(--color-success); }
+.status-err { color: var(--color-danger); }

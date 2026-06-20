@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minfinite Timeline</title>
+  <style>
+:root{--color-dark:#1a1a2e;--color-bg:#f7f7fb;--color-panel:#ffffff;--color-border:#e0e0ec;--color-gray:#ccc;--color-muted:#888;--color-accent:#6c63ff;--color-accent-hover:#5750e3;--color-accent-border:#a89bff;--color-danger:#e05252;--color-success:#2e9e5a;--font-body:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;--radius:8px;--shadow:0 2px 8px rgba(0,0,0,0.07)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--color-bg);color:var(--color-dark);font-size:15px;line-height:1.5;min-height:100vh}
+.app-header{background:var(--color-panel);border-bottom:1px solid var(--color-border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.app-header h1{font-size:1.25rem;font-weight:700;letter-spacing:-.5px}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.app-main{max-width:1100px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}
+@media(max-width:760px){.app-main{grid-template-columns:1fr}}
+.panel{background:var(--color-panel);border:1px solid var(--color-border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.panel h2{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--color-muted);margin-bottom:16px}
+.event-form{display:grid;gap:10px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--color-muted);text-transform:uppercase;letter-spacing:.04em}
+input[type="text"],input[type="number"],select{font-family:var(--font-body);font-size:14px;padding:7px 10px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-bg);color:var(--color-dark);outline:none;transition:border-color .15s}
+input[type="text"]:focus,input[type="number"]:focus,select:focus{border-color:var(--color-accent)}
+.btn{font-family:var(--font-body);font-size:13px;font-weight:600;padding:7px 14px;border:none;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s,opacity .15s;white-space:nowrap}
+.btn-primary{background:var(--color-accent);color:#fff}
+.btn-primary:hover{background:var(--color-accent-hover)}
+.btn-secondary{background:var(--color-bg);color:var(--color-dark);border:1px solid var(--color-border)}
+.btn-secondary:hover{background:var(--color-border)}
+.btn-danger{background:transparent;color:var(--color-danger);border:1px solid var(--color-danger)}
+.btn-danger:hover{background:#ffeaea}
+.btn-full{width:100%;justify-content:center}
+.tl-btn{font-family:var(--font-body);font-size:12px;font-weight:600;padding:5px 10px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-panel);color:var(--color-dark);cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:background .12s}
+.tl-btn:hover{background:var(--color-border)}
+.tl-keycap{font-size:10px;padding:1px 4px;background:var(--color-border);border-radius:3px;color:var(--color-muted)}
+.event-list-section{margin-top:20px}
+.event-list-section h2{margin-bottom:10px}
+#event-list{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto}
+.event-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;background:var(--color-bg);border-radius:6px;border:1px solid var(--color-border);font-size:13px}
+.event-info{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.remove-btn{font-family:var(--font-body);font-size:16px;line-height:1;border:none;background:transparent;color:var(--color-muted);cursor:pointer;padding:0 4px;border-radius:4px;flex-shrink:0}
+.remove-btn:hover{color:var(--color-danger);background:#ffeaea}
+.event-list-empty{font-size:13px;color:var(--color-muted);text-align:center;padding:12px 0}
+.timeline-panel{min-width:0}
+#timeline-container{background:var(--color-panel);border-radius:var(--radius)}
+.timeline-empty{height:380px;display:flex;align-items:center;justify-content:center;color:var(--color-muted);font-size:14px;border:1px solid var(--color-border);border-radius:var(--radius);text-align:center;padding:20px}
+.timeline-component{border:1px solid var(--color-border)!important;border-radius:var(--radius)}
+.status-bar{padding:4px 24px;min-height:28px}
+.status-msg{font-size:13px;padding:4px 0}
+.status-ok{color:var(--color-success)}
+.status-err{color:var(--color-danger)}
+  </style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>Minfinite Timeline</h1>
+  <div class="header-actions">
+    <button id="import-csv-btn" class="btn btn-secondary">Import CSV</button>
+    <button id="export-csv-btn" class="btn btn-secondary">Export CSV</button>
+    <button id="export-png-btn" class="btn btn-secondary">Export PNG</button>
+  </div>
+</header>
+
+<div class="status-bar">
+  <div id="status-message" class="status-msg"></div>
+</div>
+
+<main class="app-main">
+
+  <!-- Left column: form + event list -->
+  <div>
+    <section class="panel">
+      <h2>Add Event</h2>
+
+      <form id="event-form" class="event-form" novalidate>
+        <label>
+          Name
+          <input id="field-name" type="text" placeholder="Event name" autocomplete="off" />
+        </label>
+
+        <div class="form-row">
+          <label>
+            Year
+            <input id="field-year" type="number" placeholder="e.g. 1969" min="1" step="1" />
+          </label>
+          <label>
+            Era
+            <select id="field-bc">
+              <option value="false">AD</option>
+              <option value="true">BC</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label>
+            Month (optional)
+            <select id="field-month">
+              <option value="">—</option>
+              <option value="1">Jan</option>
+              <option value="2">Feb</option>
+              <option value="3">Mar</option>
+              <option value="4">Apr</option>
+              <option value="5">May</option>
+              <option value="6">Jun</option>
+              <option value="7">Jul</option>
+              <option value="8">Aug</option>
+              <option value="9">Sep</option>
+              <option value="10">Oct</option>
+              <option value="11">Nov</option>
+              <option value="12">Dec</option>
+            </select>
+          </label>
+          <label>
+            Day (optional)
+            <input id="field-day" type="number" placeholder="1–31" min="1" max="31" />
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">Add Event</button>
+      </form>
+
+      <div class="event-list-section">
+        <h2>Events</h2>
+        <div id="event-list"></div>
+        <button id="clear-all-btn" class="btn btn-danger btn-full" style="margin-top:12px;">Clear all</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Right column: timeline -->
+  <div class="timeline-panel panel">
+    <h2>Timeline</h2>
+    <div id="timeline-container"></div>
+    <p style="margin-top:12px;font-size:12px;color:var(--color-muted);">
+      Drag on the timeline to zoom into a selection. Keyboard: <kbd>+</kbd> / <kbd>−</kbd> zoom, <kbd>←</kbd> <kbd>→</kbd> pan, <kbd>0</kbd> reset.
+    </p>
+  </div>
+
+</main>
+
+<script src="js/timeline.js"></script>
+<script src="js/app.js"></script>
+
+<!-- CSV import dialog -->
+<div id="csv-dialog-backdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:100;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:10px;padding:28px 24px;max-width:340px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18);font-family:system-ui,sans-serif;">
+    <h3 style="margin:0 0 8px;font-size:1rem;color:#1a1a2e;">Import CSV</h3>
+    <p style="margin:0 0 20px;font-size:13px;color:#888;line-height:1.5;">Need the right format? Download a template first, then fill it in and come back to import.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <button id="csv-dialog-template" class="btn btn-secondary" style="justify-content:center;">Download template</button>
+      <button id="csv-dialog-import" class="btn btn-primary" style="justify-content:center;">I have a file — import it</button>
+      <button id="csv-dialog-cancel" class="btn btn-secondary" style="justify-content:center;color:#888;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<footer style="text-align:center;padding:20px;font-size:12px;color:#888;font-family:system-ui,sans-serif;">
+  &copy; 2026 Manu Panizo
+</footer>
+</body>
+</html>
